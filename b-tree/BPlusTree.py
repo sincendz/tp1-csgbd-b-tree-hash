@@ -21,8 +21,38 @@ class BPlusTree:
             leaf.values.insert(i, value)
         return leaf
 
-    def split_intenal(self, node: Internal, parent_stack):
-        pass
+    def split_internal(self, node: Internal, parent_stack):
+        # Elemento que vai subir
+        mid = math.ceil(node.keys_size / 2)
+
+        left = Internal(self.order)
+        right = Internal(self.order)
+
+        # Popula filho da esquerda
+        left.keys = node.keys[:mid]
+        left.nodes = node.nodes[: mid + 1]
+
+        # Popula filho da direita
+        right.keys = node.keys[mid + 1 :]
+        right.nodes = node.nodes[mid + 1 :]
+
+        # Era root
+        if not parent_stack:
+            new_root = Internal(self.order)
+            new_root.keys = [mid]
+            new_root.nodes = [left, right]
+            self.root = new_root
+            return
+
+        parent = parent_stack.pop()
+        # Coloca o filho esquerdo no partent
+        idx = parent.nodes.index(node)
+        parent.nodes[idx] = left
+        parent.nodes.insert(idx + 1, right)
+        parent.keys.insert(idx, mid)
+
+        if parent.is_full:
+            self.split_internal(parent, parent_stack)
 
     def insert_in_internal(self, internal: Internal, leaf: Leaf, parent_stack):
         i = 0
@@ -32,7 +62,7 @@ class BPlusTree:
         internal.keys.insert(i, new_key)
         internal.nodes.insert(i + 1, leaf)
         if internal.is_full:
-            self.split_intenal(internal, parent_stack)
+            self.split_internal(internal, parent_stack)
 
     def split_leaf(self, leaf: Leaf, parent_stack=[]):
         new_leaf = Leaf(self.order)
@@ -93,13 +123,3 @@ class BPlusTree:
         # def display(self):
         """Exibe a estrutura da árvore (nós internos e folhas)."""
         # pass
-
-
-key = [30]
-nodes = ["jp", "ma"]
-
-key.insert(0, 15)
-nodes.insert(1, "gg")
-
-print(key)
-print(nodes)
