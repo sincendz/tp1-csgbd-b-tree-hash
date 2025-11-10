@@ -1,6 +1,7 @@
 import math
 from leaf_node import Leaf
 from internal_node import Internal
+from collections import deque
 
 
 class BPlusTree:
@@ -12,9 +13,9 @@ class BPlusTree:
 
     def insert_in_leaf(self, leaf: Leaf, key, value):
         i = 0
-        while i < leaf.keys_size and key > leaf.get_key_by_index(i):
+        while i < leaf.keys_size and key >= leaf.get_key_by_index(i):
             i += 1
-        if leaf.get_key_by_index(i) == key:
+        if i < leaf.keys_size and leaf.get_key_by_index(i) == key:
             leaf.values[i] = value
         else:
             leaf.keys.insert(i, key)
@@ -22,7 +23,8 @@ class BPlusTree:
         return leaf
 
     def split_internal(self, node: Internal, parent_stack):
-        mid = math.ceil( node.keys_size / 2)
+        mid = math.ceil(node.keys_size / 2) - 1
+
         promoted_key = node.get_key_by_index(mid)
 
         left = Internal(self.order)
@@ -61,9 +63,10 @@ class BPlusTree:
         if internal.is_full:
             self.split_internal(internal, parent_stack)
 
-    def split_leaf(self, leaf: Leaf, parent_stack=[]):
+    def split_leaf(self, leaf: Leaf, parent_stack):
         new_leaf = Leaf(self.order)
         mid = math.ceil(leaf.keys_size / 2)
+
 
         new_leaf.keys = leaf.keys[mid:]
         new_leaf.values = leaf.values[mid:]
@@ -71,13 +74,14 @@ class BPlusTree:
         leaf.keys = leaf.keys[:mid]
         leaf.values = leaf.values[:mid]
 
+        new_leaf.next = leaf.next
         leaf.next = new_leaf
         # Folha é root
         if not parent_stack:
             internal = Internal(self.order)
             internal.keys = [new_leaf.keys[0]]
             internal.nodes = [leaf, new_leaf]
-            leaf.next = new_leaf
+            self.root = internal
             return
         parent = parent_stack.pop()
         self.insert_in_internal(parent, new_leaf, parent_stack)
@@ -90,7 +94,7 @@ class BPlusTree:
             leaf = self.insert_in_leaf(root, key, value)
             # Folha cheia
             if leaf.is_full:
-                self.split_leaf(leaf)
+                self.split_leaf(leaf,[])
         else:
             # Caso em que o root é um nó interno
             parent_stack = []  # Caminho do nó até a folha
@@ -114,6 +118,35 @@ class BPlusTree:
     """Remove a chave informada da árvore."""
     # return True
 
-    # def display(self):
-    """Exibe a estrutura da árvore (nós internos e folhas)."""
-    # pass
+    def display(self):
+        """Exibe a estrutura da árvore (nós internos e folhas)."""
+        if not self.root:
+            print("Árvore vazia.")
+            return
+
+        queue = deque()
+        queue.append((self.root, 0))  # (nó, nível)
+        current_level = 0
+
+        print(f"Nível {current_level}:", end=" ")
+
+        while queue:
+            node, level = queue.popleft()
+
+            # Se mudou de nível
+            if level > current_level:
+                current_level = level
+                print(f"\nNível {current_level}:", end=" ")
+
+            # Mostra o nó atual
+            if isinstance(node, Leaf):
+                print(f"[{' | '.join(map(str, node.keys))}]", end=" ")
+            elif isinstance(node, Internal):
+                print(f"({' | '.join(map(str, node.keys))})", end=" ")
+
+                # Adiciona os filhos na fila
+                for child in node.nodes:
+                    queue.append((child, level + 1))
+
+        print("\n")
+
