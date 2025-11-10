@@ -14,7 +14,7 @@ class BPlusTree:
         i = 0
         while i < leaf.keys_size and key > leaf.get_key_by_index(i):
             i += 1
-        if leaf.get_key_by_index(i) == value:
+        if leaf.get_key_by_index(i) == key:
             leaf.values[i] = value
         else:
             leaf.keys.insert(i, key)
@@ -22,37 +22,34 @@ class BPlusTree:
         return leaf
 
     def split_internal(self, node: Internal, parent_stack):
-        # Elemento que vai subir
-        mid = math.ceil(node.keys_size / 2)
+        mid = math.ceil( node.keys_size / 2)
+        promoted_key = node.get_key_by_index(mid)
 
         left = Internal(self.order)
         right = Internal(self.order)
 
-        # Popula filho da esquerda
         left.keys = node.keys[:mid]
         left.nodes = node.nodes[: mid + 1]
 
-        # Popula filho da direita
-        right.keys = node.keys[mid + 1 :]
-        right.nodes = node.nodes[mid + 1 :]
+        right.keys = node.keys[mid + 1:]
+        right.nodes = node.nodes[mid + 1:]
 
-        # Era root
         if not parent_stack:
             new_root = Internal(self.order)
-            new_root.keys = [mid]
+            new_root.keys = [promoted_key]
             new_root.nodes = [left, right]
             self.root = new_root
             return
 
         parent = parent_stack.pop()
-        # Coloca o filho esquerdo no partent
         idx = parent.nodes.index(node)
         parent.nodes[idx] = left
         parent.nodes.insert(idx + 1, right)
-        parent.keys.insert(idx, mid)
+        parent.keys.insert(idx, promoted_key)
 
         if parent.is_full:
             self.split_internal(parent, parent_stack)
+
 
     def insert_in_internal(self, internal: Internal, leaf: Leaf, parent_stack):
         i = 0
@@ -74,6 +71,7 @@ class BPlusTree:
         leaf.keys = leaf.keys[:mid]
         leaf.values = leaf.values[:mid]
 
+        leaf.next = new_leaf
         # Folha é root
         if not parent_stack:
             internal = Internal(self.order)
@@ -85,10 +83,6 @@ class BPlusTree:
         self.insert_in_internal(parent, new_leaf, parent_stack)
 
     def insert(self, key, value):
-        # Percorrer a arvore procurando por onde o nó deve entrar
-        # Quando achar vejo se está cheio
-        # Se tiver cheio, faço o split recursivo
-        # Se não tiver, adiciono na árvore
         """Insere um par (chave, valor) na árvore B+."""
         root = self.root
         # Caso 1, inserir em uma folha
@@ -96,7 +90,7 @@ class BPlusTree:
             leaf = self.insert_in_leaf(root, key, value)
             # Folha cheia
             if leaf.is_full:
-                self.root = self.split_leaf(leaf)
+                self.split_leaf(leaf)
         else:
             # Caso em que o root é um nó interno
             parent_stack = []  # Caminho do nó até a folha
@@ -112,14 +106,14 @@ class BPlusTree:
             if leaf.is_full:
                 self.split_leaf(leaf, parent_stack)
 
-        # def search(self, key):
-        """Retorna o valor associado à chave, se existir."""
-        # pass
+    # def search(self, key):
+    """Retorna o valor associado à chave, se existir."""
+    # pass
 
-        # def remove(self, key: int) -> bool:
-        """Remove a chave informada da árvore."""
-        # return True
+    # def remove(self, key: int) -> bool:
+    """Remove a chave informada da árvore."""
+    # return True
 
-        # def display(self):
-        """Exibe a estrutura da árvore (nós internos e folhas)."""
-        # pass
+    # def display(self):
+    """Exibe a estrutura da árvore (nós internos e folhas)."""
+    # pass
