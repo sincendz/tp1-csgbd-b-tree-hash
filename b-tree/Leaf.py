@@ -5,6 +5,7 @@ class Leaf:
         self.order = order
         self.next = None
 
+    @property
     def is_full(self):
         return len(self.keys) >= self.order - 1
 
@@ -12,6 +13,6 @@ class Leaf:
         if len(self.keys) < i:
             ValueError("Index passado é maior que o tamanho da lista!")
         return self.keys[i]
-    
+    @property
     def keys_size(self):
         return len(self.keys)
