@@ -177,16 +177,24 @@ class BPlusTree:
             if node.keys_size > 0:
                 new_internal_velue = node.get_key_by_index(0)
             else:
-                #Caso em que o nó ficou vazio e não tem mais de onde tirar
-                parent_stack.pop() # Remove a folha do parent_stack
-                parent_node = parent_stack.pop() # Busca no pai do nó como resolver isso
-                parent_stack.append(parent_node) # É preciso olhar depois se a chave não está no nó pai
-                #Consulta para qual nó o valor ta apontando e remove ele
-                idx_node = parent_node.nodes.index(node)
-                parent_node.keys.pop(idx_node)
-                parent_node.nodes.pop(idx_node)
-                #Checar se não ficou com pouco valor
-                return
+                next_node = node.next
+                node.keys.append(next_node.keys[0]) #Adicionando o menor valor do next node no node atual
+                node.values.append(next_node.values[0])
+                next_node.keys.pop(0)
+                next_node.values.pop(0)
+                new_index = next_node.keys[0]
+
+                #Tira a folha da stack
+                parent_stack.pop()
+                parent_node = parent_stack.pop()
+                #Lembrar de botar na lista
+                parent_stack.append(parent_node)
+                idx_parent_node_new_value = parent_node.nodes.index(node)
+                parent_node.keys[idx_parent_node_new_value] = new_index
+
+                new_internal_velue = node.keys[0]
+                #Adiciona leaf
+                parent_stack.append(node)
             # Valor retirado da folha e tem mais valores que o minimo
             if (node.leaf_has_the_minimum_keys):
                 # Procura no nos internos se o nó que vai ser retirado existe
