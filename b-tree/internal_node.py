@@ -11,7 +11,7 @@ class Internal:
     def keys_size(self):
         return len(self.keys)
     @property
-    def leaf_has_the_minimum_keys(self):
+    def internal_has_the_minimum_keys(self):
         return len(self.keys) >= math.ceil( self.order / 2) - 1
     
     def get_key_by_index(self, i):
