@@ -179,6 +179,12 @@ class BPlusTree:
             if node.keys_size > 0:
                 new_internal_velue = node.get_key_by_index(0)
             else:
+                #Tira a folha da stack
+                parent_stack.pop()
+                parent = parent_stack.pop()
+                parent_stack.append(parent)
+
+                #Checar se next node é filho do mesmo nó que o node anterior
                 next_node = node.next
                 node.keys.append(next_node.keys[0]) #Adicionando o menor valor do next node no node atual
                 node.values.append(next_node.values[0])
