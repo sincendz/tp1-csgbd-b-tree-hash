@@ -23,7 +23,7 @@ class BPlusTree:
         return leaf
 
     def split_internal(self, node: Internal, parent_stack):
-        mid = math.ceil(node.keys_size / 2) - 1
+        mid = math.ceil(node.keys_size / 2)
 
         promoted_key = node.get_key_by_index(mid)
 
