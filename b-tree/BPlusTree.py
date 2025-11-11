@@ -175,6 +175,7 @@ class BPlusTree:
             node.values.pop(key_index)
 
             new_internal_velue = -1
+            # Verifica se ainda tem elementos na folha
             if node.keys_size > 0:
                 new_internal_velue = node.get_key_by_index(0)
             else:
