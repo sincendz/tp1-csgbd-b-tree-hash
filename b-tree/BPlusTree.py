@@ -110,9 +110,19 @@ class BPlusTree:
             if leaf.is_full:
                 self.split_leaf(leaf, parent_stack)
 
-    # def search(self, key):
-    """Retorna o valor associado à chave, se existir."""
-    # pass
+    def search(self, key):
+        root = self.root
+        while True:
+            i = 0
+            while i < root.keys_size and key > root.get_key_by_index(i):
+                i += 1
+            if(isinstance(root,Leaf)):
+                if(i >= root.keys_size):
+                    return -1
+                if(root.get_key_by_index(i) == key):
+                    return root.values[i]
+                return -1
+            root = root.nodes[i]
 
     # def remove(self, key: int) -> bool:
     """Remove a chave informada da árvore."""
@@ -149,4 +159,3 @@ class BPlusTree:
                     queue.append((child, level + 1))
 
         print("\n")
-
