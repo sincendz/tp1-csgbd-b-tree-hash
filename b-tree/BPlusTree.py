@@ -193,13 +193,12 @@ class BPlusTree:
                     next_node.values.pop(0)
                     new_index = next_node.keys[0]
 
-                #Tira a folha da stack
-                parent_stack.pop()
-                parent_node = parent_stack.pop()
-                #Lembrar de botar na lista
-                parent_stack.append(parent_node)
-                idx_parent_node_new_value = parent_node.nodes.index(node)
-                parent_node.keys[idx_parent_node_new_value] = new_index
+                    #Tira a folha da stack
+                    parent_node = parent_stack.pop()
+                    #Lembrar de botar na lista
+                    parent_stack.append(parent_node)
+                    idx_parent_node_new_value = parent_node.nodes.index(node)
+                    parent_node.keys[idx_parent_node_new_value] = new_index
 
                     new_internal_velue = node.keys[0]
                     #Adiciona leaf
