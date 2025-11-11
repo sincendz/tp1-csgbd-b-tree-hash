@@ -186,11 +186,12 @@ class BPlusTree:
 
                 #Checar se next node é filho do mesmo nó que o node anterior
                 next_node = node.next
-                node.keys.append(next_node.keys[0]) #Adicionando o menor valor do next node no node atual
-                node.values.append(next_node.values[0])
-                next_node.keys.pop(0)
-                next_node.values.pop(0)
-                new_index = next_node.keys[0]
+                if next_node in parent.nodes:
+                    node.keys.append(next_node.keys[0]) #Adicionando o menor valor do next node no node atual
+                    node.values.append(next_node.values[0])
+                    next_node.keys.pop(0)
+                    next_node.values.pop(0)
+                    new_index = next_node.keys[0]
 
                 #Tira a folha da stack
                 parent_stack.pop()
