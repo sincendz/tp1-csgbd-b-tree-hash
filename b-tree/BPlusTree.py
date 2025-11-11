@@ -189,7 +189,8 @@ class BPlusTree:
                 return
             # Valor retirado da folha e tem mais valores que o minimo
             if (node.leaf_has_the_minimum_keys):
-                # Procura no nos internos se ele é referenciado
+                # Procura no nos internos se o nó que vai ser retirado existe
+                #new_internal_value represta o valor pelo que o nó será substituido nos index
                 parent_stack.pop()
                 self.adjust_internal_index(key, new_internal_velue, parent_stack);
             else:
