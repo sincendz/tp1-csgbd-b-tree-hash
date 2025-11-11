@@ -26,13 +26,13 @@ def main():
         (95, "Fruta"),
     ]
 
-    # a = [20,10,30,40,50,60,35,3,25,15,45]
     # for k, v in dados:
-    for i,v in a:
-        # i = input("Enter a number: ")
+    for i, v in a:
         bpt.insert(i, v)
-    
-    #bpt.to_graphviz("gurgel")
-    print(bpt.search(96))
+
+    print(bpt.remove(85))
+
+    bpt.display()
+
 if __name__ == "__main__":
     main()
