@@ -33,8 +33,8 @@ class BPlusTree:
         left.keys = node.keys[:mid]
         left.nodes = node.nodes[: mid + 1]
 
-        right.keys = node.keys[mid + 1:]
-        right.nodes = node.nodes[mid + 1:]
+        right.keys = node.keys[mid + 1 :]
+        right.nodes = node.nodes[mid + 1 :]
 
         if not parent_stack:
             new_root = Internal(self.order)
@@ -52,7 +52,6 @@ class BPlusTree:
         if parent.is_full:
             self.split_internal(parent, parent_stack)
 
-
     def insert_in_internal(self, internal: Internal, leaf: Leaf, parent_stack):
         i = 0
         new_key = leaf.keys[0]
@@ -66,7 +65,6 @@ class BPlusTree:
     def split_leaf(self, leaf: Leaf, parent_stack):
         new_leaf = Leaf(self.order)
         mid = math.ceil(leaf.keys_size / 2)
-
 
         new_leaf.keys = leaf.keys[mid:]
         new_leaf.values = leaf.values[mid:]
@@ -94,7 +92,7 @@ class BPlusTree:
             leaf = self.insert_in_leaf(root, key, value)
             # Folha cheia
             if leaf.is_full:
-                self.split_leaf(leaf,[])
+                self.split_leaf(leaf, [])
         else:
             # Caso em que o root é um nó interno
             parent_stack = []  # Caminho do nó até a folha
@@ -116,17 +114,13 @@ class BPlusTree:
             i = 0
             while i < root.keys_size and key > root.get_key_by_index(i):
                 i += 1
-            if(isinstance(root,Leaf)):
-                if(i >= root.keys_size):
+            if isinstance(root, Leaf):
+                if i >= root.keys_size:
                     return -1
-                if(root.get_key_by_index(i) == key):
+                if root.get_key_by_index(i) == key:
                     return root.values[i]
                 return -1
             root = root.nodes[i]
-
-    # def remove(self, key: int) -> bool:
-    """Remove a chave informada da árvore."""
-    # return True
 
     def display(self):
         """Exibe a estrutura da árvore (nós internos e folhas)."""
@@ -159,3 +153,55 @@ class BPlusTree:
                     queue.append((child, level + 1))
 
         print("\n")
+
+
+    def adjust_internal_index(self, index_to_search ,new_index_key, parent_stack):
+        while parent_stack:
+            node = parent_stack.pop()
+            #Caso o elemento que vou remover esteja em um nó interno
+            if index_to_search in node.keys:
+                idx = node.keys.index(index_to_search)
+                node.keys.pop(idx)
+                node.keys.insert(idx, new_index_key)
+                if not node.leaf_has_the_minimum_keys:
+                    #Aqui vem merda
+                    pass
+
+    def remove(self, key: int):
+        # Nó com caminho até a folha
+        parent_stack = []
+        node = self.root
+        parent_stack.append(node)
+
+        # Caminho até a folha que contem o nó
+        while True:
+            # index dos nodes
+            i = 0
+            while i < node.keys_size and key > node.get_key_by_index(i):
+                i += 1
+            # Caso o no seja um interno
+            if isinstance(node, Internal):
+                node = node.nodes[i]
+                parent_stack.append(node)
+            else:
+                if(i < node.keys_size):
+                    if(key == node.get_key_by_index(i)):
+                        print(f"Chegou na folha, valor da key: {node.get_key_by_index(i)}")
+                        #Achou o elemento, agora é hora de excluir ele da folha
+                        key_index = node.keys.index(key)
+                        node.keys.pop(key_index)
+                        node.values.pop(key_index)
+                        new_internal_velue = node.get_key_by_index(0)
+                        #Valor retirado da folha e tem mais valores que o minimo
+                        if(node.leaf_has_the_minimum_keys):
+                            #Procura no nos internos se ele é referenciado
+                            parent_stack.pop()
+                            self.adjust_internal_index(key,new_internal_velue, parent_stack);
+                        else:
+                            #Aqui vem merda
+                            pass
+                        return True
+                    else:
+                        return False
+                else:
+                    return False
