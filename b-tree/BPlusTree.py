@@ -174,7 +174,19 @@ class BPlusTree:
             node.keys.pop(key_index)
             node.values.pop(key_index)
             # Verifica se ainda tem elementos na folha
-            new_internal_velue = node.get_key_by_index(0)
+            if node.keys_size > 0:
+                new_internal_velue = node.get_key_by_index(0)
+            else:
+                #Caso em que o nó ficou vazio e não tem mais de onde tirar
+                parent_stack.pop() # Remove a folha do parent_stack
+                parent_node = parent_stack.pop() # Busca no pai do nó como resolver isso
+                parent_stack.append(parent_node) # É preciso olhar depois se a chave não está no nó pai
+                #Consulta para qual nó o valor ta apontando e remove ele
+                idx_node = parent_node.nodes.index(node)
+                parent_node.keys.pop(idx_node)
+                parent_node.nodes.pop(idx_node)
+                #Checar se não ficou com pouco valor
+                return
             # Valor retirado da folha e tem mais valores que o minimo
             if (node.leaf_has_the_minimum_keys):
                 # Procura no nos internos se ele é referenciado
