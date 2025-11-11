@@ -30,14 +30,14 @@ def main():
     for i, v in a:
         bpt.insert(i, v)
 
-    # bpt.display()
+    #bpt.display()
 
-    print(bpt.remove(5))
-    print(bpt.remove(10))
-    print(bpt.remove(15))
-    print(bpt.remove(25))
-    print(bpt.remove(35))
-    # print(bpt.remove(30))
+    bpt.remove(5)
+    bpt.remove(10)
+    bpt.remove(15)
+    bpt.remove(25)
+    bpt.remove(35)
+    bpt.remove(30)
 
     bpt.display()
 

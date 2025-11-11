@@ -155,88 +155,102 @@ class BPlusTree:
         print("\n")
 
 
-    def adjust_internal_index(self, index_to_search ,new_index_key, parent_stack):
-        while parent_stack:
-            node = parent_stack.pop()
-            #Caso o elemento que vou remover esteja em um nó interno
-            if index_to_search in node.keys:
-                idx = node.keys.index(index_to_search)
-                node.keys.pop(idx)
-                node.keys.insert(idx, new_index_key)
-                if not node.internal_has_the_minimum_keys:
-                    #Aqui vem merda
-                    pass
-
-    def remove_from_leaf(self, key, node, parent_stack):
-        if key in node.keys:  # Busca pela chave
-            # Achou o elemento, agora é hora de excluir ele da folha
-            key_index = node.keys.index(key)
-            node.keys.pop(key_index)
-            node.values.pop(key_index)
-
-            new_internal_velue = -1
-            # Verifica se ainda tem elementos na folha
-            if node.keys_size > 0:
-                new_internal_velue = node.get_key_by_index(0)
-            else:
-                #Tira a folha da stack
-                parent_stack.pop()
-                parent = parent_stack.pop()
-                parent_stack.append(parent)
-
-                #Checar se next node é filho do mesmo nó que o node anterior
-                next_node = node.next
-                if next_node in parent.nodes:
-                    node.keys.append(next_node.keys[0]) #Adicionando o menor valor do next node no node atual
-                    node.values.append(next_node.values[0])
-                    next_node.keys.pop(0)
-                    next_node.values.pop(0)
-                    new_index = next_node.keys[0]
-
-                    #Tira a folha da stack
-                    parent_node = parent_stack.pop()
-                    #Lembrar de botar na lista
-                    parent_stack.append(parent_node)
-                    idx_parent_node_new_value = parent_node.nodes.index(node)
-                    parent_node.keys[idx_parent_node_new_value] = new_index
-
-                    new_internal_velue = node.keys[0]
-                    #Adiciona leaf
-                    parent_stack.append(node)
-                else:
-                    print("Chegou na merda")
-            # Valor retirado da folha e tem mais valores que o minimo
-            if (node.leaf_has_the_minimum_keys):
-                # Procura no nos internos se o nó que vai ser retirado existe
-                #new_internal_value represta o valor pelo que o nó será substituido nos index
-                parent_stack.pop()
-                self.adjust_internal_index(key, new_internal_velue, parent_stack);
-            else:
-                print("Chegou na merda")
-                # Aqui vem merda
-                pass
-            return True
-        else:
-            # Chave de busca não encontrada
+    def remove_from_leaf(self, key, leaf, parent_stack):
+        if key not in leaf.keys:
             return False
 
+        key_index = leaf.keys.index(key) #index da chave na folha
+        leaf.keys.pop(key_index)
+        leaf.values.pop(key_index)
+
+        # Caso 1: folha ainda tem o mínimo → apenas checar se a chave existe nos
+        #nós internos
+        if leaf.has_minimum_keys or leaf == self.root:
+            parent_stack.pop()
+            replace_to = leaf.keys[0]
+            while parent_stack:
+                parent = parent_stack.pop()
+                if key in parent.keys:
+                    idx = parent.keys.index(key)
+                    parent.keys.insert(idx,replace_to)
+                    break
+            return True
+
+
+
+        # Caso 2: folha ficou abaixo do mínimo → tentar redistribuição ou merge
+        if len(parent_stack) <= 1:
+            return True
+        parent_stack.pop()
+        parent = parent_stack[-1]
+
+        idx = parent.nodes.index(leaf)
+        print(key, f"idx: {idx}")
+        left_sibling = parent.nodes[idx - 1] if idx > 0 else None
+        right_sibling = parent.nodes[idx + 1] if idx < len(parent.nodes) - 1 else None
+
+        # Tenta emprestar do irmão esquerdo
+        if left_sibling and len(left_sibling.keys) > math.ceil(self.order / 2) - 1:
+            borrowed_key = left_sibling.keys.pop(-1)
+            borrowed_value = left_sibling.values.pop(-1)
+            leaf.keys.insert(0, borrowed_key)
+            leaf.values.insert(0, borrowed_value)
+            parent.keys[idx - 1] = leaf.keys[0]
+            return True
+
+        # Tenta emprestar do irmão direito
+        elif right_sibling and len(right_sibling.keys) > math.ceil(self.order / 2) - 1:
+            print("vai pegar irmao direito")
+            borrowed_key = right_sibling.keys.pop(0)
+            borrowed_value = right_sibling.values.pop(0)
+            print(f"Chave que vai pegar: {borrowed_key}")
+            leaf.keys.append(borrowed_key)
+            leaf.values.append(borrowed_value)
+            parent.keys[idx] = right_sibling.keys[0]
+            print(parent.keys, key, borrowed_key)
+            #Aqui tem que fazer um search do index
+            #Pegar o valor que está em leaf posição 0 e substituir onde tiver tbm
+            replace_to = leaf.keys[0]
+            print(replace_to, parent_stack[1].keys)
+            while parent_stack:
+                parent = parent_stack.pop()
+                if key in parent.keys:
+                    print("Achou")
+                    idx = parent.keys.index(key)
+                    parent.keys[idx]=replace_to
+                    break
+            return True
+
+        # Nenhum irmão pode emprestar
+        elif left_sibling:
+            left_sibling.keys.extend(leaf.keys)
+            left_sibling.values.extend(leaf.values)
+            left_sibling.next = leaf.next
+            parent.keys.pop(idx - 1)
+            parent.nodes.pop(idx)
+        elif right_sibling:
+            leaf.keys.extend(right_sibling.keys)
+            leaf.values.extend(right_sibling.values)
+            leaf.next = right_sibling.next
+            parent.keys.pop(idx)
+            parent.nodes.pop(idx + 1)
+
+        
+
+        return True
+
     def remove(self, key: int):
-        # Nó com caminho até a folha
         parent_stack = []
         node = self.root
         parent_stack.append(node)
 
-        # Caminho até a folha que contem o nó
-        while True:
-            # index dos nodes
+        # Caminho até a folha
+        while isinstance(node, Internal):
             i = 0
             while i < node.keys_size and key >= node.get_key_by_index(i):
                 i += 1
-            # Caso o no seja um interno
-            if isinstance(node, Internal):
-                node = node.nodes[i]
-                parent_stack.append(node)
-            else:
-                # Chegou em uma folha
-                return self.remove_from_leaf(key,node,parent_stack)
+            parent_stack.append(node.nodes[i])
+            node = node.nodes[i]
 
+        # Agora node é uma folha
+        return self.remove_from_leaf(key, node, parent_stack)
