@@ -203,6 +203,7 @@ class BPlusTree:
                 parent_stack.pop()
                 self.adjust_internal_index(key, new_internal_velue, parent_stack);
             else:
+                print("Chegou na merda")
                 # Aqui vem merda
                 pass
             return True
