@@ -201,9 +201,11 @@ class BPlusTree:
                 idx_parent_node_new_value = parent_node.nodes.index(node)
                 parent_node.keys[idx_parent_node_new_value] = new_index
 
-                new_internal_velue = node.keys[0]
-                #Adiciona leaf
-                parent_stack.append(node)
+                    new_internal_velue = node.keys[0]
+                    #Adiciona leaf
+                    parent_stack.append(node)
+                else:
+                    print("Chegou na merda")
             # Valor retirado da folha e tem mais valores que o minimo
             if (node.leaf_has_the_minimum_keys):
                 # Procura no nos internos se o nó que vai ser retirado existe
