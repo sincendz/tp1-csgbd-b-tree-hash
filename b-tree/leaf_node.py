@@ -14,7 +14,7 @@ class Leaf:
         return len(self.keys) > self.order - 1
 
     @property
-    def leaf_has_the_minimum_keys(self):
+    def has_minimum_keys(self):
         return len(self.keys) >= math.ceil( self.order / 2) - 1
 
     def get_key_by_index(self, i):
