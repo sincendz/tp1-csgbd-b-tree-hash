@@ -187,3 +187,24 @@ class BPlusTree:
         else:
             # Chave de busca não encontrada
             return False
+
+    def remove(self, key: int):
+        # Nó com caminho até a folha
+        parent_stack = []
+        node = self.root
+        parent_stack.append(node)
+
+        # Caminho até a folha que contem o nó
+        while True:
+            # index dos nodes
+            i = 0
+            while i < node.keys_size and key >= node.get_key_by_index(i):
+                i += 1
+            # Caso o no seja um interno
+            if isinstance(node, Internal):
+                node = node.nodes[i]
+                parent_stack.append(node)
+            else:
+                # Chegou em uma folha
+                return self.remove_from_leaf(key,node,parent_stack)
+
