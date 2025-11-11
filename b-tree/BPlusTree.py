@@ -167,40 +167,23 @@ class BPlusTree:
                     #Aqui vem merda
                     pass
 
-    def remove(self, key: int):
-        # Nó com caminho até a folha
-        parent_stack = []
-        node = self.root
-        parent_stack.append(node)
-
-        # Caminho até a folha que contem o nó
-        while True:
-            # index dos nodes
-            i = 0
-            while i < node.keys_size and key >= node.get_key_by_index(i):
-                i += 1
-            # Caso o no seja um interno
-            if isinstance(node, Internal):
-                node = node.nodes[i]
-                parent_stack.append(node)
+    def remove_from_leaf(self, key, node, parent_stack):
+        if key in node.keys:  # Busca pela chave
+            # Achou o elemento, agora é hora de excluir ele da folha
+            key_index = node.keys.index(key)
+            node.keys.pop(key_index)
+            node.values.pop(key_index)
+            # Verifica se ainda tem elementos na folha
+            new_internal_velue = node.get_key_by_index(0)
+            # Valor retirado da folha e tem mais valores que o minimo
+            if (node.leaf_has_the_minimum_keys):
+                # Procura no nos internos se ele é referenciado
+                parent_stack.pop()
+                self.adjust_internal_index(key, new_internal_velue, parent_stack);
             else:
-                #Chegou em uma folha
-                if key in node.keys: #Busca pela chave
-                    #Achou o elemento, agora é hora de excluir ele da folha
-                    key_index = node.keys.index(key)
-                    node.keys.pop(key_index)
-                    node.values.pop(key_index)
-                    #Verifica se ainda tem elementos na folha
-                    new_internal_velue = node.get_key_by_index(0)
-                    #Valor retirado da folha e tem mais valores que o minimo
-                    if(node.leaf_has_the_minimum_keys):
-                        #Procura no nos internos se ele é referenciado
-                        parent_stack.pop()
-                        self.adjust_internal_index(key,new_internal_velue, parent_stack);
-                    else:
-                        #Aqui vem merda
-                        pass
-                    return True
-                else:
-                    # Chave de busca não encontrada
-                    return False
+                # Aqui vem merda
+                pass
+            return True
+        else:
+            # Chave de busca não encontrada
+            return False
