@@ -163,7 +163,7 @@ class BPlusTree:
                 idx = node.keys.index(index_to_search)
                 node.keys.pop(idx)
                 node.keys.insert(idx, new_index_key)
-                if not node.leaf_has_the_minimum_keys:
+                if not node.internal_has_the_minimum_keys:
                     #Aqui vem merda
                     pass
 
