@@ -177,31 +177,30 @@ class BPlusTree:
         while True:
             # index dos nodes
             i = 0
-            while i < node.keys_size and key > node.get_key_by_index(i):
+            while i < node.keys_size and key >= node.get_key_by_index(i):
                 i += 1
             # Caso o no seja um interno
             if isinstance(node, Internal):
                 node = node.nodes[i]
                 parent_stack.append(node)
             else:
-                if(i < node.keys_size):
-                    if(key == node.get_key_by_index(i)):
-                        print(f"Chegou na folha, valor da key: {node.get_key_by_index(i)}")
-                        #Achou o elemento, agora é hora de excluir ele da folha
-                        key_index = node.keys.index(key)
-                        node.keys.pop(key_index)
-                        node.values.pop(key_index)
-                        new_internal_velue = node.get_key_by_index(0)
-                        #Valor retirado da folha e tem mais valores que o minimo
-                        if(node.leaf_has_the_minimum_keys):
-                            #Procura no nos internos se ele é referenciado
-                            parent_stack.pop()
-                            self.adjust_internal_index(key,new_internal_velue, parent_stack);
-                        else:
-                            #Aqui vem merda
-                            pass
-                        return True
+                #Chegou em uma folha
+                if key in node.keys: #Busca pela chave
+                    #Achou o elemento, agora é hora de excluir ele da folha
+                    key_index = node.keys.index(key)
+                    node.keys.pop(key_index)
+                    node.values.pop(key_index)
+                    #Verifica se ainda tem elementos na folha
+                    new_internal_velue = node.get_key_by_index(0)
+                    #Valor retirado da folha e tem mais valores que o minimo
+                    if(node.leaf_has_the_minimum_keys):
+                        #Procura no nos internos se ele é referenciado
+                        parent_stack.pop()
+                        self.adjust_internal_index(key,new_internal_velue, parent_stack);
                     else:
-                        return False
+                        #Aqui vem merda
+                        pass
+                    return True
                 else:
+                    # Chave de busca não encontrada
                     return False
