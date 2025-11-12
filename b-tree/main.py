@@ -26,14 +26,14 @@ def main():
         # (95, "Fruta"),
     # ]
 
-    a = [ 5 , 10 , 15, 20 , 25, 30 , 35 , 40, 50 , 60 ]
-
+    #a = [ 5 , 10 , 15, 20 , 25, 30 , 35 , 40, 50 , 60 ]
+    a = [i for i in range(1,21)]
     # for k, v in dados:
     for i in a:
         bpt.insert(i, "v")
 
-    bpt.remove(25)
-    bpt.remove(30)
+    #bpt.remove(25)
+    #bpt.remove(30)
 
     #bpt.display()
 
@@ -50,6 +50,8 @@ def main():
     # bpt.remove(95)
     # bpt.remove(45)
     # bpt.remove(50)
+    key = 0
+    print(f"Procurando por chave: {key}: {bpt.search(key)}")
     bpt.display()
 
 if __name__ == "__main__":
