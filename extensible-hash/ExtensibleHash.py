@@ -118,30 +118,32 @@ class ExtensibleHash:
 
 # Teste
 h = ExtensibleHash(3)
+#
+# h.insert(4, "Pão")
+# h.insert(24, "Leite")
+# h.insert(16, "Café")
+# h.insert(6, "Açúcar")
+# h.insert(22, "Queijo")
+# h.insert(10, "Manteiga")
+# h.insert(7, "Presunto")
+# h.insert(31, "GUIGUI")
+# h.insert(9, "Mário")
+# h.insert(20, "GG")
+# h.insert(26, "Presunto")
 
-h.insert(4, "Pão")
-h.insert(24, "Leite")
-h.insert(16, "Café")
-h.insert(6, "Açúcar")
-h.insert(22, "Queijo")
-h.insert(10, "Manteiga")
-h.insert(7, "Presunto")
-h.insert(31, "GUIGUI")
-h.insert(9, "Mário")
-h.insert(20, "GG")
-h.insert(26, "Presunto")
 
+import random
+a = [i for i in range(1,20)]
+random.shuffle(a)
+for i in a:
+    h.insert(i, "")
 
-
-# value = "A"
-# for i in range(1,7):
+# for i in range(1,11):
 #     h.insert(i,value)
 
-# while True:
-#     key = input()
-#     h.insert(int(key),"")
-#     h.display()
 
 
 
 h.display()
+key = 0
+print( f"Procurando por chave: {key}: {h.search(key)}")
