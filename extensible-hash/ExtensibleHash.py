@@ -13,9 +13,9 @@ class Bucket:
 
 
 class ExtensibleHash:
-    def __init__(self, bucket_size: int):
+    def __init__(self, bucket_size: int, global_depth: int = 2):
         self.bucket_size = bucket_size
-        self.global_depth = 2
+        self.global_depth = global_depth
         self.buckets = [Bucket(bucket_size, self.global_depth) for _ in range(2 ** self.global_depth)]
 
     def _hash(self, key):
@@ -58,27 +58,51 @@ class ExtensibleHash:
                 new_bucket.values.append((k, v))
         self.buckets[idx_new_bucket] = new_bucket
 
+    def search(self, key: int) -> any:
+        """Retorna o valor associado à chave, se existir."""
+        index = self._hash(key)
+        bucket = self.buckets[index]
+
+        for (k,v) in bucket.values:
+            if k == key:
+                return v
 
 
-    def __repr__(self):
-        s = f"Global depth = {self.global_depth}\n"
-        for i, b in enumerate(self.buckets):
-            s += f"{i:0{self.global_depth}b}: {b}\n"
-        return s
+    def remove(self, key: int) -> bool:
+        index = self._hash(key)
+        bucket = self.buckets[index]
+        for i, (k,v) in enumerate(bucket.values):
+            if k == key:
+                bucket.values.pop(i)
+                return True
+        return  False
 
+    def display(self):
+        for i , bucket in enumerate(self.buckets):
+            binary = bin(i)[2:]
+            if len(binary) < self.global_depth:
+                binary = "0"*(self.global_depth - len(binary)) + binary
+            print(f"{binary} : {bucket}" )
 
 # Teste
-h = ExtensibleHash(3)
+h = ExtensibleHash(2,1)
 
-h.insert(4, "Pão")
-h.insert(24, "Leite")
-h.insert(16, "Café")
-h.insert(6, "Açúcar")
-h.insert(22, "Queijo")
-h.insert(10, "Manteiga")
-h.insert(7, "Presunto")
-h.insert(31, "GUIGUI")
-h.insert(9, "Mário")
-h.insert(20, "GG")
-#h.insert(26, "Presunto")
-print(h)
+# h.insert(4, "Pão")
+# h.insert(24, "Leite")
+# h.insert(16, "Café")
+# h.insert(6, "Açúcar")
+# h.insert(22, "Queijo")
+# h.insert(10, "Manteiga")
+# h.insert(7, "Presunto")
+# h.insert(31, "GUIGUI")
+# h.insert(9, "Mário")
+# h.insert(20, "GG")
+# h.insert(26, "Presunto")
+
+value = "A"
+for i in range(10):
+    h.insert(i,value)
+
+
+
+h.display()
