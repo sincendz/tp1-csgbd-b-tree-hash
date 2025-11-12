@@ -42,22 +42,21 @@ class ExtensibleHash:
         if(bucket.local_depth == self.global_depth):
             self.buckets += self.buckets.copy() #Dobrando o tamaho
             self.global_depth += 1
+        mask = (1 << self.global_depth) - 1 #Nova mask com tamanho atualizado
 
-            mask = (1 << self.global_depth) - 1 #Nova mask com tamanho atualizado
+        new_bucket = Bucket(self.bucket_size, self.global_depth)
 
-            new_bucket = Bucket(self.bucket_size, self.global_depth)
-
-            old_bucket_values = bucket.values.copy()
-            bucket.values.clear()
-            idx_new_bucket = 0
-            for (k,v) in old_bucket_values:
-                idx = hash(k) & mask
-                if idx == index:
-                    self.buckets[idx].values.append((k, v))
-                else:
-                    idx_new_bucket = idx
-                    new_bucket.values.append((k, v))
-            self.buckets[idx_new_bucket] = new_bucket
+        old_bucket_values = bucket.values.copy()
+        bucket.values.clear()
+        idx_new_bucket = 0
+        for (k,v) in old_bucket_values:
+            idx = hash(k) & mask
+            if idx == index:
+                self.buckets[idx].values.append((k, v))
+            else:
+                idx_new_bucket = idx
+                new_bucket.values.append((k, v))
+        self.buckets[idx_new_bucket] = new_bucket
 
 
 
@@ -78,8 +77,8 @@ h.insert(6, "Açúcar")
 h.insert(22, "Queijo")
 h.insert(10, "Manteiga")
 h.insert(7, "Presunto")
-h.insert(31, "Presunto")
-h.insert(9, "Presunto")
-h.insert(20, "Presunto")
-h.insert(26, "Presunto")
+h.insert(31, "GUIGUI")
+h.insert(9, "Mário")
+h.insert(20, "GG")
+#h.insert(26, "Presunto")
 print(h)
