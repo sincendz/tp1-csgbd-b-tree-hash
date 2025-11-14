@@ -59,7 +59,7 @@ class ExtensibleHash:
             #Para cada key nos valores do bucket cheio acha uma nova posição para ele
             idx_new_bucket = 0
             for (k,v) in values_bucket:
-                idx = hash(k) & mask #Novo index
+                idx = self._hash(k)
                 #Caso os novo mapemaento seja igual ao antigo
                 #Adiciona no mesmo lugar
                 if idx == index:
