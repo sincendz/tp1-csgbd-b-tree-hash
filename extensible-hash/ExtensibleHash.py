@@ -81,7 +81,7 @@ class ExtensibleHash:
             bucket.values.clear()
             new_index = 0
             for (k,v) in values_bucket:
-                idx = hash(k) & mask
+                idx =self._hash(k)
                 if idx == index:
                     self.buckets[idx].values.append((k, v))
                 else:
