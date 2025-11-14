@@ -19,7 +19,8 @@ class ExtensibleHash:
         self.buckets = [Bucket(bucket_size, self.global_depth) for _ in range(2 ** self.global_depth)]
 
     def _hash(self, key):
-        return hash(key) & ((1 << self.global_depth) - 1)
+        shift = (1 << self.global_depth)
+        return key % shift
 
     def insert(self, key: int, value: any):
         index = self._hash(key)
@@ -45,8 +46,6 @@ class ExtensibleHash:
             #Bucket cheio passa a ter um novo tamanho de local_depth
             bucket.local_depth = self.global_depth
 
-            #Mask para os novos valores
-            mask = (1 << self.global_depth) - 1
             #Pegar os valores do index passado e passalos na nova
             #função de hash para colocalos no local correto
             #Valores do bucket que passatam na nova função
@@ -58,7 +57,7 @@ class ExtensibleHash:
             #Para cada key nos valores do bucket cheio acha uma nova posição para ele
             idx_new_bucket = 0
             for (k,v) in values_bucket:
-                idx = hash(k) & mask #Novo index
+                idx = self._hash(k)
                 #Caso os novo mapemaento seja igual ao antigo
                 #Adiciona no mesmo lugar
                 if idx == index:
@@ -72,7 +71,6 @@ class ExtensibleHash:
             #Caso em que o global depth é maior que o local,
             #ou seja, existem posições livres
 
-            mask = (1 << self.global_depth) - 1
 
             #Criação de um novo bucket para os novos valores
             new_bucket = Bucket(self.bucket_size, bucket.local_depth)
@@ -80,7 +78,7 @@ class ExtensibleHash:
             bucket.values.clear()
             new_index = 0
             for (k,v) in values_bucket:
-                idx = hash(k) & mask
+                idx =self._hash(k)
                 if idx == index:
                     self.buckets[idx].values.append((k, v))
                 else:
@@ -117,33 +115,31 @@ class ExtensibleHash:
             print(f"{binary} : {bucket}" )
 
 # Teste
-h = ExtensibleHash(3)
-#
-# h.insert(4, "Pão")
-# h.insert(24, "Leite")
-# h.insert(16, "Café")
-# h.insert(6, "Açúcar")
-# h.insert(22, "Queijo")
-# h.insert(10, "Manteiga")
-# h.insert(7, "Presunto")
-# h.insert(31, "GUIGUI")
-# h.insert(9, "Mário")
-# h.insert(20, "GG")
-# h.insert(26, "Presunto")
+h = ExtensibleHash(3,1)
+
+#Adicao de valores
+print("Adição de valores")
+while True:
+    a = input("Adicionar valor: ")
+    if a == "end":
+        break
+    h.insert(int(a),"Livia")
+    h.display()
 
 
-import random
-a = [i for i in range(1,20)]
-random.shuffle(a)
-for i in a:
-    h.insert(i, "")
+#Busca por valores
+print("Busca por valores: ")
+while True:
+    key = input("Buscar valor: ")
+    if key == "end":
+        break
+    print(f"Procurando por chave: {key}: {h.search(int(key))}")
 
-# for i in range(1,11):
-#     h.insert(i,value)
-
-
-
-
+print("Remover os valores: ")
 h.display()
-key = 0
-print( f"Procurando por chave: {key}: {h.search(key)}")
+while True:
+    key = input("Remover valor: ")
+    if key == "end":
+        break
+    print(f"Valor {key} foi removido: {h.remove(int(key))}")
+    h.display()
