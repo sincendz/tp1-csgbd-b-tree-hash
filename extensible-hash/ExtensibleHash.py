@@ -19,7 +19,8 @@ class ExtensibleHash:
         self.buckets = [Bucket(bucket_size, self.global_depth) for _ in range(2 ** self.global_depth)]
 
     def _hash(self, key):
-        return hash(key) & ((1 << self.global_depth) - 1)
+        shift = (1 << self.global_depth)
+        return key % shift
 
     def insert(self, key: int, value: any):
         index = self._hash(key)
