@@ -46,8 +46,6 @@ class ExtensibleHash:
             #Bucket cheio passa a ter um novo tamanho de local_depth
             bucket.local_depth = self.global_depth
 
-            #Mask para os novos valores
-            mask = (1 << self.global_depth) - 1
             #Pegar os valores do index passado e passalos na nova
             #função de hash para colocalos no local correto
             #Valores do bucket que passatam na nova função
@@ -73,7 +71,6 @@ class ExtensibleHash:
             #Caso em que o global depth é maior que o local,
             #ou seja, existem posições livres
 
-            mask = (1 << self.global_depth) - 1
 
             #Criação de um novo bucket para os novos valores
             new_bucket = Bucket(self.bucket_size, bucket.local_depth)
@@ -118,33 +115,20 @@ class ExtensibleHash:
             print(f"{binary} : {bucket}" )
 
 # Teste
-h = ExtensibleHash(3)
-#
-# h.insert(4, "Pão")
-# h.insert(24, "Leite")
-# h.insert(16, "Café")
-# h.insert(6, "Açúcar")
-# h.insert(22, "Queijo")
-# h.insert(10, "Manteiga")
-# h.insert(7, "Presunto")
-# h.insert(31, "GUIGUI")
-# h.insert(9, "Mário")
-# h.insert(20, "GG")
-# h.insert(26, "Presunto")
+h = ExtensibleHash(3,1)
+
+#Adicao de valores
+while True:
+    a = input()
+    if a == "end":
+        break
+    h.insert(int(a),"Lívia")
+    h.display()
 
 
-import random
-a = [i for i in range(1,20)]
-random.shuffle(a)
-for i in a:
-    h.insert(i, "")
-
-# for i in range(1,11):
-#     h.insert(i,value)
-
-
-
-
-h.display()
-key = 0
-print( f"Procurando por chave: {key}: {h.search(key)}")
+#Busca por valores
+while True:
+    key = int(input())
+    if key == "end":
+        break
+    print(f"Procurando por chave: {key}: {h.search(key)}")
