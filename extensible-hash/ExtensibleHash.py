@@ -118,17 +118,28 @@ class ExtensibleHash:
 h = ExtensibleHash(3,1)
 
 #Adicao de valores
+print("Adição de valores")
 while True:
-    a = input()
+    a = input("Adicionar valor: ")
     if a == "end":
         break
-    h.insert(int(a),"Lívia")
+    h.insert(int(a),"Livia")
     h.display()
 
 
 #Busca por valores
+print("Busca por valores: ")
 while True:
-    key = int(input())
+    key = input("Buscar valor: ")
     if key == "end":
         break
-    print(f"Procurando por chave: {key}: {h.search(key)}")
+    print(f"Procurando por chave: {key}: {h.search(int(key))}")
+
+print("Remover os valores: ")
+h.display()
+while True:
+    key = input("Remover valor: ")
+    if key == "end":
+        break
+    print(f"Valor {key} foi removido: {h.remove(int(key))}")
+    h.display()
