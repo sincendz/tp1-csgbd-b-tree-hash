@@ -65,26 +65,6 @@ Após **cada inserção ou remoção**, o sistema **mostra automaticamente** com
 
 ---
 
-## **Descrição Resumida das Estruturas**
-
-### **Árvore B+**
-
-* Todas as chaves ficam nas folhas
-* Nós internos armazenam apenas chaves de navegação
-
-### **Hash Extensível**
-
-* Utiliza hashing dinâmico com profundidades locais e globais
-* Diretório dobra de tamanho conforme necessário
-* Evita colisões por divisão de buckets
-
-
-
-
-Após isso o programa avança para o próximo bloco de operações.
-
----
-
 # Árvore B+ — Exemplo de Execução
 
 ### 🔹 **Código dos whiles (resumo do funcionamento):**
