@@ -127,18 +127,19 @@ class BPlusTree:
                 self.split_leaf(leaf, parent_stack)
 
     def search(self, key):
-        root = self.root
-        while True:
+        node = self.root
+        leaf = None
+        #Busca a folha
+        while isinstance(node,Internal):
             i = 0
-            while i < root.keys_size and key > root.get_key_by_index(i):
-                i += 1
-            if isinstance(root, Leaf):
-                if i >= root.keys_size:
-                    return -1
-                if root.get_key_by_index(i) == key:
-                    return root.values[i]
-                return -1
-            root = root.nodes[i]
+            while i < node.keys_size and key >= node.get_key_by_index(i):
+                i+=1
+            node = node.nodes[i]
+        leaf = node
+        for i,_ in enumerate(leaf.keys):
+            if(leaf.get_key_by_index(i) == key):
+                return leaf.values[i]
+        return -1
 
     def display(self):
         """Exibe a estrutura da árvore (nós internos e folhas)."""
