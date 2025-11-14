@@ -11,10 +11,13 @@ class BPlusTree:
         self.order = order
         self.root = Leaf(order)
 
+    #Ok
     def insert_in_leaf(self, leaf: Leaf, key, value):
         i = 0
+        #percorre a folha para encontrar a posição correta de inserir o novo elemento
         while i < leaf.keys_size and key >= leaf.get_key_by_index(i):
             i += 1
+        #Checa se ele já existe
         if i < leaf.keys_size and leaf.get_key_by_index(i) == key:
             leaf.values[i] = value
         else:
@@ -23,27 +26,36 @@ class BPlusTree:
         return leaf
 
     def split_internal(self, node: Internal, parent_stack):
-        mid = math.ceil(node.keys_size / 2)
+        #mid = math.ceil(node.keys_size / 2)
+        #Quando número foi impar pega o elemento do meio
+        mid = node.keys_size // 2
 
+        #Chave que vai subir
         promoted_key = node.get_key_by_index(mid)
 
         left = Internal(self.order)
         right = Internal(self.order)
 
+        #Nó esquerdo recebe os valores menores que mid
         left.keys = node.keys[:mid]
         left.nodes = node.nodes[: mid + 1]
 
+        #Nó direito os valores maiores que mid,
+        #mid não precisa ficar em nenhum dos dois
+        #pq eh nó interno
         right.keys = node.keys[mid + 1 :]
         right.nodes = node.nodes[mid + 1 :]
 
+        #Ok, show aqui
         if not parent_stack:
             new_root = Internal(self.order)
             new_root.keys = [promoted_key]
             new_root.nodes = [left, right]
             self.root = new_root
             return
-
+        # Nó tem um pai
         parent = parent_stack.pop()
+        #Acha onde estava o nó passado
         idx = parent.nodes.index(node)
         parent.nodes[idx] = left
         parent.nodes.insert(idx + 1, right)
@@ -54,12 +66,17 @@ class BPlusTree:
 
     def insert_in_internal(self, internal: Internal, leaf: Leaf, parent_stack):
         i = 0
-        new_key = leaf.keys[0]
+        new_key = leaf.keys[0] #chave que será adicionada para chegar no nó
+        #Busca pela posição que a chave vai ficar
         while i < internal.keys_size and new_key > internal.get_key_by_index(i):
             i += 1
+        #Adiciona o valor na posição correta
         internal.keys.insert(i, new_key)
         internal.nodes.insert(i + 1, leaf)
         if internal.is_full:
+            #internal = node que estamos usando, parent_stack = 'pais do nó'
+            #na parent stack não tem o nó interno pois foi feito um pop dele
+            #na chamada dessa função insert_in_internal
             self.split_internal(internal, parent_stack)
 
     def split_leaf(self, leaf: Leaf, parent_stack):
@@ -81,6 +98,7 @@ class BPlusTree:
             internal.nodes = [leaf, new_leaf]
             self.root = internal
             return
+        #Caso em que a folha não eh root
         parent = parent_stack.pop()
         self.insert_in_internal(parent, new_leaf, parent_stack)
 
@@ -322,7 +340,8 @@ class BPlusTree:
         # Caminho até a folha
         while isinstance(node, Internal):
             i = 0
-            while i < node.keys_size and key >= node.get_key_by_index(i):
+            # >=
+            while i < node.keys_size and key > node.get_key_by_index(i):
                 i += 1
             parent_stack.append(node.nodes[i])
             node = node.nodes[i]
